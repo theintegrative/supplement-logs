@@ -31,7 +31,29 @@ def remove_all():
     print("Drop Intake")
     log.drop_intake()
 
+def removefrominventory_enough():
+    log.add_inventory("vitamin-b", 1000, "MG")
+    log.show_inventory()
+    log.add_intake("Test remove from inventory enough", {"": name})
+    # the result will be that there is less in inventory
+    log,show_inventory()
+
+def removefrominventory_not_enough():
+    log.add_inventory("vitamin-b", 1000, "MG")
+    log.show_inventory()
+    log.add_intake("Test remove from inventory not enough", {"name": name})
+    # result will be that there will not be anything removed or taken in
+    log.show_inventory()
+
+def removefrominventory_not_existing():         
+    log.add_inventory("vitamin-b", 1000, "MG")   
+    log.show_inventory()
+    log.add_intake("Test remove from inventory not existing", {"name": name})
+    # result will be that there will not be anything removed or taken in
+    log.show_inventory()
+
+
 if __name__ == '__main__':
-    populate_all()
     show_all()
     remove_all()
+    show_all()
