@@ -60,6 +60,17 @@ class SuplementLog:
 
     # intake - can consist of stacks and singles
     def add_intake(self, note, content_list):
+        for supplement in content_list:
+            if supplement["s_type"] == "single":
+                items = self.myinventory.find({}, {"s_type": "single", "name": supplement["name"]})
+                for item in items:
+                    if supplement["amount"] < item["amount"]:
+                        supplement_list.append({"s_type": "single", "name": name, "amount": amount, "unit": unit})
+
+            if supplement["s_type"] == "stack":
+                for single in supplement["supplements"]:
+                    items = self.myinventory.find({}, {"s_type": "single", "name": single["name"]})
+
         # for every item in content_list
             # check if supplement.name is in inventory
                 # remove from that the item.amount if < suplement.amount and update the value
