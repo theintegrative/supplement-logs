@@ -60,21 +60,18 @@ class SuplementLog:
 
     # intake - can consist of stacks and singles
     def add_intake(self, note, content_list):
+        supplement_list = []
         for supplement in content_list:
             if supplement["s_type"] == "single":
-                items = self.myinventory.find({}, {"s_type": "single", "name": supplement["name"]})
+                items = self.myinventory.find({"name": supplement["name"]})
                 for item in items:
                     if supplement["amount"] < item["amount"]:
-                        supplement_list.append({"s_type": "single", "name": name, "amount": amount, "unit": unit})
-
-            if supplement["s_type"] == "stack":
-                for single in supplement["supplements"]:
-                    items = self.myinventory.find({}, {"s_type": "single", "name": single["name"]})
-
-        # for every item in content_list
-            # check if supplement.name is in inventory
-                # remove from that the item.amount if < suplement.amount and update the value
-        intake = {"datetime": datetime.datetime.utcnow(), "note": note, "supplements": content_list}
+                        supplement_list.append({"s_type": "single", "name": supplement["name"], "amount": supplement["amount"], "unit": supplement["unit"]})
+                        oldvalues = {"name": item["name"], "amount": item["amount"], "unit": item["unit"]}
+                        new_amount = item["amount"] - supplement["amount"]
+                        newvalues =  { "$set": {"name": item["name"], "amount": new_amount, "unit": item["unit"]}}
+                        self.myinventory.update_one(oldvalues, newvalues)
+        intake = {"datetime": datetime.datetime.utcnow(), "note": note, "supplements": supplement_list}
         self.myintake.insert_one(intake)
                             
     def import_intake(self, data):   
