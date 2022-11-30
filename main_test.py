@@ -32,11 +32,17 @@ def remove_all():
     log.drop_intake()
 
 def removefrominventory_enough():
+    remove_all()
     log.add_inventory("vitamin-b", 1000, "MG")
     log.show_inventory()
-    log.add_intake("Test remove from inventory enough", {"": name})
+    supplement_list = [{"s_type": "single", "name": "vitamin-b", "amount": 100, "unit": "MG"}]
+    log.add_intake("Test remove from inventory enough", supplement_list)
     # the result will be that there is less in inventory
-    log,show_inventory()
+    test_inventory = log.show_inventory()
+    remove_all()
+    assert test_inventory["amount"] == 90
+    # this maybe later be expanded to a series of tests
+    # now it is only visually validated
 
 def removefrominventory_not_enough():
     log.add_inventory("vitamin-b", 1000, "MG")
@@ -54,6 +60,4 @@ def removefrominventory_not_existing():
 
 
 if __name__ == '__main__':
-    show_all()
-    remove_all()
-    show_all()
+    removefrominventory_enough()
