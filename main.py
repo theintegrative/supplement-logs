@@ -9,11 +9,41 @@ class SuplementLog:
         self.mystacks = self.mydb["stacks"]
         self.myintake = self.mydb["intake-logs"]
         self.myinventory = self.mydb["inventory"]
+
+    def add_to_collection(self, attribute, value):
+        return getattr(self, attribute).insert_one(value)
+
+    def import_to_collection(self, attribute, value):
+        getattr(self, attribute).insert_many(value)
+
+    def show_to_collection(self, attribute, value):
+        return getattr(self, attribute).insert_many(value)
+
+    def get_from_collection(self, attribute, query):
+        return getattr(self, attribute).find(query)
+
+    def drop_collection(self, attribute, value):
+        getattr(self, attribute).drop()
     
+    def add_intake_collection(self, note, item_x_list, attribute):
+        item_y_old = []
+        item_y_new = []
+        for item_x in item_x_list:
+            item_y_list = self.get_from_collection(attribute, { "name": item_x["name"]})
+            for item_y in item_y_list:
+                if item_x["amount"] < item_y["amount"]:
+                    item_y_old.append({"name": item_y["name"], "amount": item_y["amount"], "unit": item_y["unit"]})
+                    new_value = item_y["amount"] - item_x["amount"]
+                    item_y_new.append({ "$set":{"name": item_y["name"], "amount": new_value, "unit": item_y["unit"]}})
+        for match in zip(item_y_old, item_y_new):
+            self.myinventory.update_one(*match)
+        intake = {"datetime": datetime.datetime.utcnow(), "note": note, "supplements": item_x_list}
+        self.myintake.insert_one(intake)
+
     # inventory
     def add_inventory(self, name, amount, unit):
         inventory = { "name": name, "amount": amount, "unit": unit }
-        self.myinventory.insert_one(inventory)
+        self.add_to_collection("myinventory", inventory)
 
     def import_inventory(self, data):
         self.myinventory.insert_many(data) 
@@ -22,6 +52,9 @@ class SuplementLog:
         items = self.myinventory.find({})
         for item in items:
             print(item)
+
+    def get_inventory(self, query):
+        return self.myinventory.find(query)
 
     def drop_inventory(self):
         self.myinventory.drop()
@@ -59,20 +92,8 @@ class SuplementLog:
         self.mystacks.drop()
 
     # intake - can consist of stacks and singles
-    def add_intake(self, note, content_list):
-        supplement_list = []
-        for supplement in content_list:
-            if supplement["s_type"] == "single":
-                items = self.myinventory.find({"name": supplement["name"]})
-                for item in items:
-                    if supplement["amount"] < item["amount"]:
-                        supplement_list.append({"s_type": "single", "name": supplement["name"], "amount": supplement["amount"], "unit": supplement["unit"]})
-                        oldvalues = {"name": item["name"], "amount": item["amount"], "unit": item["unit"]}
-                        new_amount = item["amount"] - supplement["amount"]
-                        newvalues =  { "$set": {"name": item["name"], "amount": new_amount, "unit": item["unit"]}}
-                        self.myinventory.update_one(oldvalues, newvalues)
-        intake = {"datetime": datetime.datetime.utcnow(), "note": note, "supplements": supplement_list}
-        self.myintake.insert_one(intake)
+    def add_intake(self, note, list_items):
+        self.add_intake_collection(note, list_items, "myinventory")
                             
     def import_intake(self, data):   
         self.myintake.insert_many(data)   
