@@ -49,9 +49,11 @@ class SuplementLog:
         self.myinventory.insert_many(data) 
 
     def show_inventory(self):
+        inventory = []
         items = self.myinventory.find({})
         for item in items:
-            print(item)
+            inventory.append(item)
+        return inventory
 
     def get_inventory(self, query):
         return self.myinventory.find(query)
