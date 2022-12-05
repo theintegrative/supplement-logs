@@ -34,28 +34,35 @@ def remove_all():
 def removefrominventory_enough():
     remove_all()
     log.add_inventory("vitamin-b", 1000, "MG")
-    print(log.show_inventory())
     list_items = [{"s_type": "single", "name": "vitamin-b", "amount": 100, "unit": "MG"}]
     log.add_intake("Testing remove from inventory enough", list_items)
-    print("Log added")
     # the result will be that there is less in inventory
+    remove_all()
     assert log.show_inventory()[0]["amount"] == 900
     # this maybe later be expanded to a series of tests
     # now it is only visually validated
 
 def removefrominventory_not_enough():
-    log.add_inventory("vitamin-b", 1000, "MG")
+    remove_all()
+    log.add_inventory("vitamin-b", 100, "MG")
+    list_items = [{"s_type": "single", "name": "vitamin-b", "amount": 1000, "unit": "MG"}]
     log.show_inventory()
-    log.add_intake("Test remove from inventory not enough", {"name": name})
+    log.add_intake("Test remove from inventory not enough", list_items)
     # result will be that there will not be anything removed or taken in
     log.show_inventory()
+    remove_all()
+    assert log.show_inventory()[0]["amount"] == 1000
 
-def removefrominventory_not_existing():         
+def removefrominventory_not_existing():
+    remove_all()
     log.add_inventory("vitamin-b", 1000, "MG")   
+    list_items = [{"s_type": "single", "name": "cocaine", "amount": 100, "unit": "MG"}]
     log.show_inventory()
-    log.add_intake("Test remove from inventory not existing", {"name": name})
+    log.add_intake("Test remove from inventory not existing", list_items)
     # result will be that there will not be anything removed or taken in
     log.show_inventory()
+    remove_all()
+    assert log.show_inventory()[0]["amount"] == 1000
 
 
 if __name__ == '__main__':
