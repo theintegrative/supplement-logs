@@ -35,11 +35,21 @@ class SuplementLog:
                     item_y_old.append({"name": item_y["name"], "amount": item_y["amount"], "unit": item_y["unit"]})
                     new_value = item_y["amount"] - item_x["amount"]
                     item_y_new.append({ "$set":{"name": item_y["name"], "amount": new_value, "unit": item_y["unit"]}})
+        # this can have it's own input with two list inputs
         for match in zip(item_y_old, item_y_new):
             self.myinventory.update_one(*match)
         intake = {"datetime": datetime.datetime.utcnow(), "note": note, "supplements": item_x_list}
         self.myintake.insert_one(intake)
+    
+    def singles(self):
+        #recognizes if single or stack and returns list of content
 
+    def presetting(self, item_list):
+        # split the itemlist in two: with or without preset
+        # with presets get menu to +/- amount of clicks
+        # without presets get menu to quickly set or accurately set
+        # returns a list with supplements
+        
     # inventory
     def add_inventory(self, name, amount, unit):
         inventory = { "name": name, "amount": amount, "unit": unit }
@@ -63,7 +73,7 @@ class SuplementLog:
  
     # supplement - is one single compound
     def add_supplement(self, name, low, high, start, step, unit):
-        supplement = {"s_type": "single", "name": name, "range": {"low": low, "high": high}, "start": start, "step": step, "unit": unit}
+        supplement = {"name": name, "range": {"low": low, "high": high}, "start": start, "step": step, "unit": unit}
         self.mysupplements.insert_one(supplement)
 
     def import_supplement(self, data):

@@ -64,6 +64,21 @@ def removefrominventory_not_existing():
     remove_all()
     assert log.show_inventory()[0]["amount"] == 1000
 
+def presetting_only_name():
+    remove_all()
+    item = [{"name": "L-tyrosine"}]
+    preset = log.add_supplement("L-tyrosine", 50, 5000, 80, 15, "MG")
+    log.presetting(item)
+    # you give in a item or pre-stack and it will apply a preset if matching with presets 
+
+def presetting_full_single():
+    remove_all()
+    log.presetting(item)
+
+def presetting_mixed():
+    remove_all()
+    log.presetting(item)
+
 
 if __name__ == '__main__':
     removefrominventory_enough()
