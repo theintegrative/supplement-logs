@@ -13,4 +13,6 @@ Todo:
 	- [ ] New
 - [ ] Add substance to intake
 - [ ] Add note to intake - after logging
+## Testing
 - [ ] Serialise testing
+- [ ] Pre and post scripts for remove_all() and showing everything
