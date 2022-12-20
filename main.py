@@ -29,7 +29,7 @@ class SuplementLog:
         item_y_old = []
         item_y_new = []
         for item_x in item_x_list:
-            item_y_list = self.get_from_collection(attribute, { "name": item_x["name"]})
+            item_y_list = self.get_from_collection(attribute, { "name": item_x["name"] })
             for item_y in item_y_list:
                 if item_x["amount"] < item_y["amount"]:
                     item_y_old.append({"name": item_y["name"], "amount": item_y["amount"], "unit": item_y["unit"]})
@@ -43,13 +43,24 @@ class SuplementLog:
     
     def singles(self):
         #recognizes if single or stack and returns list of content
+        pass
 
     def presetting(self, item_list):
         # split the itemlist in two: with or without preset
         # with presets get menu to +/- amount of clicks
         # without presets get menu to quickly set or accurately set
         # returns a list with supplements
-        
+        matched = []
+        unmatched = []
+        for x in item_list:
+            matching = self.get_from_collection("myintake", { "name": x["name"]})
+            if matching == None:
+                # Here could be a ratio based calculation using max dose as input
+                unmatched.append({x})
+            else:
+                matched.append({matching[0]["name"]: matching[0]})
+        return matched, unmatched
+
     # inventory
     def add_inventory(self, name, amount, unit):
         inventory = { "name": name, "amount": amount, "unit": unit }
