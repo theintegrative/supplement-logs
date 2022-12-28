@@ -12,59 +12,32 @@ def populate_all():
         log.add_stack(name + " stack", { "name": name, "amount": 100, "unit": "MG" })
 
 def show_all():
-    print("Inventory")
     log.show_inventory()
-    print("Supplements")
     log.show_supplement()
-    print("Stacks")
     log.show_stack()
-    print("Intake")
     log.show_intake()
 
 def remove_all():
-    print("Drop Inventory")
     log.drop_inventory()
-    print("Drop Supplements")
     log.drop_supplement()
-    print("Drop Stacks")
     log.drop_stack()
-    print("Drop Intake")
     log.drop_intake()
 
-def removefrominventory_enough():
+@pytest.mark.parametrize("control_item_amount, control_item_name, test_item_amount, test_item_name, result", 
+        [
+            (1000, "SAME-ITEM", 100, "SAME-ITEM", 900),
+            (100, "SAME-ITEM", 1000, "SAME-ITEM", 100),
+            (1000, "SAME-ITEM", 100, "DIFF-ITEM", 1000)
+            ]
+        )
+def test_inventory(control_item_amount, control_item_name, test_item_amount, test_item_name, result):
     remove_all()
-    log.add_inventory("vitamin-b", 1000, "MG")
-    list_items = [{"s_type": "single", "name": "vitamin-b", "amount": 100, "unit": "MG"}]
-    log.add_intake("Testing remove from inventory enough", list_items)
-    result = log.show_inventory()
-    # the result will be that there is less in inventory
+    unit = "UNIT"                                                                            
+    log.add_inventory(control_item_name, control_item_amount, unit)
+    list_items = [{"name": test_item_name, "amount": test_item_amount, "unit": unit}]
+    log.add_intake("TEST", list_items)
+    assert log.show_inventory()[0]["amount"] == result
     remove_all()
-    assert result[0]["amount"] == 900
-    # this maybe later be expanded to a series of tests
-    # now it is only visually validated
-
-def removefrominventory_not_enough():
-    remove_all()
-    log.add_inventory("vitamin-b", 100, "MG")
-    list_items = [{"s_type": "single", "name": "vitamin-b", "amount": 1000, "unit": "MG"}]
-    log.show_inventory()
-    log.add_intake("Test remove from inventory not enough", list_items)
-    # result will be that there will not be anything removed or taken in
-    result = log.show_inventory()
-    print(result[0])
-    remove_all()
-    assert result[0]["amount"] == 100
-
-def removefrominventory_not_existing():
-    remove_all()
-    log.add_inventory("vitamin-b", 1000, "MG")   
-    list_items = [{"s_type": "single", "name": "cocaine", "amount": 100, "unit": "MG"}]
-    log.show_inventory()
-    log.add_intake("Test remove from inventory not existing", list_items)
-    # result will be that there will not be anything removed or taken in
-    result = log.show_inventory()
-    remove_all()
-    assert result[0]["amount"] == 1000
 
 def presetting_only_name():
     remove_all()
@@ -81,9 +54,3 @@ def presetting_full_single():
 def presetting_mixed():
     remove_all()
     log.presetting(item)
-
-
-if __name__ == '__main__':
-    removefrominventory_enough()
-    removefrominventory_not_enough()
-    removefrominventory_not_existing()
